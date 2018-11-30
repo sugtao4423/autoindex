@@ -15,7 +15,8 @@ function getCurrentFiles(): array{
     $ignoreFilesInScriptDir = [
         basename($_SERVER['SCRIPT_NAME']),
         'README.md',
-        '.git'
+        '.git',
+        '.gitignore'
     ];
     $path = $_SERVER['DOCUMENT_ROOT'] . getDirectoryPath();
     $files = [];

@@ -11,18 +11,23 @@ function getDirectoryPath(): string{
 }
 
 function getCurrentFiles(): array{
-    $scriptName = basename($_SERVER['SCRIPT_NAME']);
+    $scriptDir = dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']) . '/';
+    $ignoreFilesInScriptDir = [
+        basename($_SERVER['SCRIPT_NAME']),
+        'README.md',
+        '.git'
+    ];
     $path = $_SERVER['DOCUMENT_ROOT'] . getDirectoryPath();
     $files = [];
     $topDirSort = [];
-    foreach(scandir($path) as $file){
-        if($file === $scriptName OR $file === '.'){
+    foreach(scandir($path) as $fileName){
+        if(($fileName === '.') OR ($path === $scriptDir AND in_array($fileName, $ignoreFilesInScriptDir))){
             continue;
         }
 
-        $fullPath = $path . $file;
+        $fullPath = $path . $fileName;
         $files[] = [
-            'name' => is_dir($fullPath) ? "${file}/" : $file,
+            'name' => is_dir($fullPath) ? "${fileName}/" : $fileName,
             'time' => date(TIMEFORMAT, filemtime($fullPath)),
             'size' => calcFileSize(filesize($fullPath)),
             'isDir' => is_dir($fullPath)

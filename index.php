@@ -2,6 +2,7 @@
 /*** config ***/
 define('TIMEZONE', 'Asia/Tokyo');
 define('TIMEFORMAT', 'Y-m-d H:i');
+define('ENABLE_DIRSIZE', true);
 /**************/
 
 date_default_timezone_set(TIMEZONE);
@@ -27,17 +28,36 @@ function getCurrentFiles(): array{
         }
 
         $fullPath = $path . $fileName;
+
+        $isDir = is_dir($fullPath);
+        $name = $isDir ? "${fileName}/" : $fileName;
+        $time = date(TIMEFORMAT, filemtime($fullPath));
+
+        if($isDir AND ENABLE_DIRSIZE AND $name !== '../'){
+            $size = calcFileSize(dirsize($fullPath));
+        }else{
+            $size = calcFileSize(filesize($fullPath));
+        }
+
         $files[] = [
-            'name' => is_dir($fullPath) ? "${fileName}/" : $fileName,
-            'time' => date(TIMEFORMAT, filemtime($fullPath)),
-            'size' => calcFileSize(filesize($fullPath)),
-            'isDir' => is_dir($fullPath)
+            'name' => $name,
+            'time' => $time,
+            'size' => $size,
+            'isDir' => $isDir
         ];
-        $topDirSort[] = is_dir($fullPath);
+        $topDirSort[] = $isDir;
     }
 
     array_multisort($topDirSort, SORT_DESC, SORT_NATURAL, $files);
     return $files;
+}
+
+function dirsize(string $path): int{
+    $size = 0;
+    foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS)) as $item){
+        $size += $item->getSize();
+    }
+    return $size;
 }
 
 function calcFileSize(int $size): string{
@@ -71,10 +91,10 @@ function getFilesTable(): string{
         $rows .= '<tr>';
         $rows .= "<td><a href=\"{$file['name']}\">{$file['name']}</td>";
         $rows .= "<td>{$file['time']}</td>";
-        if($file['isDir']){
-            $rows .= '<td class="center">-</td>';
-        }else{
+        if((!$file['isDir'] OR ENABLE_DIRSIZE) AND $file['name'] !== '../'){
             $rows .= "<td>{$file['size']}</td>";
+        }else{
+            $rows .= '<td class="center">-</td>';
         }
         $rows .= '</tr>';
     }

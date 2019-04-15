@@ -7,6 +7,13 @@ define('ENABLE_DIRSIZE', true);
 
 date_default_timezone_set(TIMEZONE);
 
+if(preg_match('|/$|', $_SERVER['REQUEST_URI']) === 0){
+    $path = preg_replace('|^/*|', '', $_SERVER['REQUEST_URI']);
+    http_response_code(301);
+    header("Location: /${path}/");
+    exit(1);
+}
+
 function getDirectoryPath(): string{
     return urldecode(preg_replace('|^/+|', '/', $_SERVER['REQUEST_URI']));
 }

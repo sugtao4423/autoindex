@@ -11,7 +11,7 @@ date_default_timezone_set(TIMEZONE);
 if (preg_match('|/$|', $_SERVER['REQUEST_URI']) === 0) {
     $path = preg_replace('|^/*|', '', $_SERVER['REQUEST_URI']);
     http_response_code(301);
-    header("Location: /${path}/");
+    header("Location: /{$path}/");
     exit(1);
 }
 
@@ -40,7 +40,7 @@ function getCurrentFiles(): array
         $fullPath = $path . $fileName;
 
         $isDir = is_dir($fullPath);
-        $name = $isDir ? "${fileName}/" : $fileName;
+        $name = $isDir ? "{$fileName}/" : $fileName;
         $time = date(TIMEFORMAT, filemtime($fullPath));
 
         if ($isDir && ENABLE_DIRSIZE && $name !== '../') {
@@ -111,7 +111,7 @@ function getFilesTable(): string
         }
         $rows .= '</tr>';
     }
-    return "${rows}</tbody></table>";
+    return "{$rows}</tbody></table>";
 }
 ?>
 <!DOCTYPE HTML>

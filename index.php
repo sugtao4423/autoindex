@@ -33,7 +33,7 @@ function getCurrentFiles(): array
     $files = [];
     $topDirSort = [];
     foreach (scandir($path) as $fileName) {
-        if (($fileName === '.') or ($path === $scriptDir and in_array($fileName, $ignoreFilesInScriptDir))) {
+        if ($fileName === '.' || ($path === $scriptDir && in_array($fileName, $ignoreFilesInScriptDir))) {
             continue;
         }
 
@@ -43,7 +43,7 @@ function getCurrentFiles(): array
         $name = $isDir ? "${fileName}/" : $fileName;
         $time = date(TIMEFORMAT, filemtime($fullPath));
 
-        if ($isDir and ENABLE_DIRSIZE and $name !== '../') {
+        if ($isDir && ENABLE_DIRSIZE && $name !== '../') {
             $size = calcFileSize(dirsize($fullPath));
         } else {
             $size = calcFileSize(filesize($fullPath));
@@ -104,7 +104,7 @@ function getFilesTable(): string
         $rows .= '<tr>';
         $rows .= "<td><a href=\"{$file['name']}\">{$file['name']}</td>";
         $rows .= "<td>{$file['time']}</td>";
-        if ((!$file['isDir'] or ENABLE_DIRSIZE) and $file['name'] !== '../') {
+        if ((!$file['isDir'] || ENABLE_DIRSIZE) && $file['name'] !== '../') {
             $rows .= "<td>{$file['size']}</td>";
         } else {
             $rows .= '<td class="center">-</td>';
